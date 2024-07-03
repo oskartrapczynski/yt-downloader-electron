@@ -13,7 +13,6 @@ interface Props {
   value?: string
   onChange: (e: React.ChangeEvent<HTMLSelectElement>, field: TDownloadOptionEnum) => void
   field: TDownloadOptionEnum
-  conditionForRender?: boolean
 }
 
 export const SelectDetails = ({
@@ -24,13 +23,12 @@ export const SelectDetails = ({
   show = 'keys',
   value,
   onChange,
-  field,
-  conditionForRender
+  field
 }: Props) => {
   const handleChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     onChange(e, field)
   }
-  if (conditionForRender === false) return null
+
   if (formatTypeButton !== formatyTypeButtonTarget) return null
   if (options === null || !Object.keys(options)?.length) return <NoContent />
   return (

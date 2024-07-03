@@ -44,7 +44,6 @@ export const SelectVideoMusicDetails = ({
         value={value?.videoResolution}
         onChange={onChange}
         field={DOWNLOAD_OPTION.VIDEO_RESOLUTION}
-        conditionForRender={Boolean(value?.videoFormat)}
       />
 
       <SelectDetails
@@ -56,7 +55,6 @@ export const SelectVideoMusicDetails = ({
         value={value?.musicFormat}
         onChange={onChange}
         field={DOWNLOAD_OPTION.MUSIC_FORMAT}
-        conditionForRender={Boolean(value?.videoFormat && value?.videoResolution)}
       />
 
       <SelectDetails
@@ -68,9 +66,6 @@ export const SelectVideoMusicDetails = ({
         value={value?.musicQuality}
         onChange={onChange}
         field={DOWNLOAD_OPTION.MUSIC_QUALITY}
-        conditionForRender={Boolean(
-          value?.videoFormat && value?.videoResolution && value?.musicFormat
-        )}
       />
     </>
   )

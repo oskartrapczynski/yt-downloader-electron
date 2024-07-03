@@ -38,7 +38,6 @@ export const SelectMusicDetails = ({ formatTypeButton, value, onChange }: Props)
         value={value?.musicQuality}
         onChange={onChange}
         field={DOWNLOAD_OPTION.MUSIC_QUALITY}
-        conditionForRender={Boolean(value?.musicFormat)}
       />
     </>
   )

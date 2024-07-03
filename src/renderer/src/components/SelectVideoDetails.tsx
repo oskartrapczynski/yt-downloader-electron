@@ -43,7 +43,6 @@ export const SelectVideoDetails = ({
         value={value?.videoResolution}
         onChange={onChange}
         field={DOWNLOAD_OPTION.VIDEO_RESOLUTION}
-        conditionForRender={Boolean(value?.videoFormat)}
       />
     </>
   )
