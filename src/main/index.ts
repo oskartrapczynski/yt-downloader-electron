@@ -3,6 +3,11 @@ import { join } from 'path'
 import { electronApp, optimizer, is } from '@electron-toolkit/utils'
 import icon from '../../resources/icon.png?asset'
 
+import { IPC_HANDLER } from '@shared/constants/ipc-handler'
+import { getMetaDataFromURL } from '@main/handlers/get-metadata-from-url'
+
+const { GET_METADATA_FROM_URL } = IPC_HANDLER
+
 function createWindow(): void {
   // Create the browser window.
   const mainWindow = new BrowserWindow({
@@ -51,6 +56,7 @@ app.whenReady().then(() => {
 
   // IPC test
   ipcMain.on('ping', () => console.log('pong'))
+  ipcMain.handle(GET_METADATA_FROM_URL, getMetaDataFromURL)
 
   createWindow()
 
