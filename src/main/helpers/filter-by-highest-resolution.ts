@@ -1,5 +1,5 @@
 import { VIDEO_RESOLUTION } from '@shared/constants/video-resolution'
-import { TVideoResolutions } from '@shared/types/enums/video-resolution'
+import { TVideoResolutions } from '@shared/types/types/video-resolution'
 import ytdl from 'ytdl-core'
 
 export const filterByHighestResolution = (formats: ytdl.videoFormat[]): TVideoResolutions => {

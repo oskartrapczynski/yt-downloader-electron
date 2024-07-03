@@ -1,8 +1,8 @@
+import { TFormatTypeButtonEnum } from '@shared/types/enums/format-type-button'
 import { TVideoProperty } from '@shared/types/types/video-property'
-import { TFormatTypeButtons } from '@shared/types/format-type-buttons'
 
 interface Props {
-  formatTypeButton: TFormatTypeButtons
+  formatTypeButton: TFormatTypeButtonEnum
   videoProperty: TVideoProperty
 }
 

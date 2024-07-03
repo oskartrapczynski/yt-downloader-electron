@@ -18,10 +18,6 @@ export const getMetaDataFromURL = async (
 
     if (!formats.length) throw new Error('Error while downloading metadatas!')
 
-    // const filteredMusicFormats = filterMusicFormats(formats)
-    // const filteredVideoFormats = filterVideoFormats(formats)
-    // const filteredVideoMusicFormats = filterVideoMusicFormats(formats)
-
     const filteredByHighestResolution = filterByHighestResolution(formats)
 
     return {
