@@ -1,5 +1,7 @@
 import { Divider, CardFooter, Flex, ButtonGroup, Button } from '@chakra-ui/react'
+import { videoTitleToFilename } from '@renderer/helpers/video-title-to-filename'
 import { FORMAT_TYPE_BUTTON } from '@shared/constants/format-type-button'
+import { IPC_HANDLER } from '@shared/constants/ipc-handler'
 import { TDownloadOptionEnum } from '@shared/types/enums/download-option'
 import { TFormatTypeButtonEnum } from '@shared/types/enums/format-type-button'
 import { TDownloadOption } from '@shared/types/types/download-option'
@@ -17,6 +19,7 @@ interface Props {
     e: React.ChangeEvent<HTMLSelectElement>,
     field: TDownloadOptionEnum
   ) => void
+  url: string
 }
 
 export const DownloaderCardFooter = ({
@@ -24,9 +27,45 @@ export const DownloaderCardFooter = ({
   formatTypeButton,
   handleClickFormatTypeButton,
   downloadOption,
-  handleChangeDownloadOption
+  handleChangeDownloadOption,
+  url
 }: Props) => {
-  console.log(downloadOption)
+  const { DOWNLOAD_DATA } = IPC_HANDLER
+
+  const validateSettingSelects = () => {
+    switch (formatTypeButton) {
+      case FORMAT_TYPE_BUTTON.MUSIC:
+        return Boolean(downloadOption?.musicFormat && downloadOption?.musicQuality)
+
+      case FORMAT_TYPE_BUTTON.VIDEO:
+        return Boolean(downloadOption?.videoFormat && downloadOption?.videoResolution)
+
+      case FORMAT_TYPE_BUTTON.VIDEO_MUSIC:
+        return Boolean(
+          downloadOption?.musicFormat &&
+            downloadOption?.musicQuality &&
+            downloadOption?.videoFormat &&
+            downloadOption?.videoResolution
+        )
+      default:
+        return false
+    }
+  }
+
+  const handleDownloadClick = async () => {
+    const isValidated = validateSettingSelects()
+    if (!isValidated) return
+    const fileName = videoTitleToFilename(metadata?.title)
+
+    await window.electron.ipcRenderer.invoke(
+      DOWNLOAD_DATA,
+      url,
+      fileName,
+      downloadOption,
+      formatTypeButton
+    )
+  }
+
   return (
     <>
       {metadata && (
@@ -52,7 +91,7 @@ export const DownloaderCardFooter = ({
                 value={downloadOption}
                 onChange={handleChangeDownloadOption}
               />
-              <SelectVideoDetails
+              {/* <SelectVideoDetails
                 formatTypeButton={formatTypeButton}
                 videoResolutions={metadata.videoResolution}
                 value={downloadOption}
@@ -63,10 +102,10 @@ export const DownloaderCardFooter = ({
                 videoResolutions={metadata.videoResolution}
                 value={downloadOption}
                 onChange={handleChangeDownloadOption}
-              />
+              /> */}
 
               {formatTypeButton ? (
-                <Button variant="solid" colorScheme="green">
+                <Button variant="solid" colorScheme="green" onClick={handleDownloadClick}>
                   DOWNLOAD
                 </Button>
               ) : null}

@@ -3,5 +3,5 @@ interface Props {
 }
 
 export const OptionSelect = ({ property }: Props) => {
-  return <option>{`${property}`}</option>
+  return <option value={property.toLowerCase()}>{`${property}`}</option>
 }

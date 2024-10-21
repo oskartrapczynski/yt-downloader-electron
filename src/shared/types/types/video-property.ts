@@ -1,3 +1,3 @@
-import ytdl from 'ytdl-core'
+import ytdl from '@distube/ytdl-core'
 
 export type TVideoProperty = ytdl.videoFormat

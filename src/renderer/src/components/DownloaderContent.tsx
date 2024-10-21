@@ -2,22 +2,18 @@ import { TMetaData } from '@shared/types/types/metadata'
 import { DownloaderError } from './DownloaderError'
 import { DownloaderCard } from './DownloaderCard'
 import { TDownloaderStateEnum } from '@shared/types/enums/downloader-state'
-import { DOWNLOADER_STATE } from '@shared/constants/downloader-state'
 
 interface Props {
-  state: TDownloaderStateEnum
+  downloaderState: TDownloaderStateEnum
   metadata: TMetaData | null
+  url: string
 }
 
-export const DownloaderContent = ({ state, metadata }: Props) => {
+export const DownloaderContent = ({ downloaderState, metadata, url }: Props) => {
   return (
     <>
-      {state === DOWNLOADER_STATE.DONE && (
-        <DownloaderError isError={metadata!.isError} errorMessage={metadata!.message} />
-      )}
-      {state !== null && metadata?.isError === false && (
-        <DownloaderCard metadata={metadata} loading={state === DOWNLOADER_STATE.LOADING} />
-      )}
+      <DownloaderError downloaderState={downloaderState} metadata={metadata} />
+      {<DownloaderCard downloaderState={downloaderState} metadata={metadata} url={url} />}
     </>
   )
 }

@@ -14,24 +14,26 @@ export const DownloaderWrapper = () => {
   const [url, setUrl] = useState(
     'https://www.youtube.com/watch?v=ixkoVwKQaJg&ab_channel=DJSnakeVEVO'
   )
-  const [state, setState] = useState<TDownloaderStateEnum>(DOWNLOADER_STATE.NULL)
+  const [downloaderState, setDownloaderState] = useState<TDownloaderStateEnum>(
+    DOWNLOADER_STATE.NULL
+  )
   const [metadata, setMetadata] = useState<TMetaData | null>(null)
 
   const handleChangeUrlInput = (e: React.ChangeEvent<HTMLInputElement>) => {
     setUrl(e.target.value)
   }
   const handleClick = async () => {
-    setState(DOWNLOADER_STATE.LOADING)
+    setDownloaderState(DOWNLOADER_STATE.LOADING)
     const resMetadata = await window.electron.ipcRenderer.invoke(GET_METADATA_FROM_URL, url)
-    setState(DOWNLOADER_STATE.DONE)
+    setDownloaderState(DOWNLOADER_STATE.DONE)
     setMetadata(resMetadata)
   }
 
-  console.log('state', state)
+  console.log('downloaderState', downloaderState)
   return (
     <>
       <DownloaderHeader url={url} onChange={handleChangeUrlInput} onClick={handleClick} />
-      <DownloaderContent state={state} metadata={metadata} />
+      <DownloaderContent downloaderState={downloaderState} metadata={metadata} url={url} />
     </>
   )
 }

@@ -1,6 +1,6 @@
 import { filterByHighestResolution } from '@main/helpers/filter-by-highest-resolution'
 import { TMetaData } from '@shared/types/types/metadata'
-import ytdl from 'ytdl-core'
+import ytdl from '@distube/ytdl-core'
 
 export const getMetaDataFromURL = async (
   _: Electron.IpcMainInvokeEvent,
