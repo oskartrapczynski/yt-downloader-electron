@@ -1,44 +1,34 @@
-import { DOWNLOAD_OPTION } from '@shared/constants/download-option'
+import { TMusicFormatEnum } from '@shared/types/enums/music-format'
+import { SelectMusicFormats } from './Select/SelectMusicFormats'
+import { TMusicQualityEnum } from '@shared/types/enums/music-quality'
+import { SelectMusicQuality } from './Select/SelectMusicQuality'
 import { FORMAT_TYPE_BUTTON } from '@shared/constants/format-type-button'
-import { MUSIC_FORMAT } from '@shared/constants/music-format'
-import { MUSIC_QUALITY } from '@shared/constants/music-quality'
-import { TDownloadOptionEnum } from '@shared/types/enums/download-option'
 import { TFormatTypeButtonEnum } from '@shared/types/enums/format-type-button'
-import { TDownloadOption } from '@shared/types/types/download-option'
 
-import { SelectDetails } from './SelectDetails'
-
-interface Props {
+interface SelectMusicDetailsProps {
   formatTypeButton: TFormatTypeButtonEnum | null
-  value: TDownloadOption | null
-  onChange: (e: React.ChangeEvent<HTMLSelectElement>, field: TDownloadOptionEnum) => void
+  musicFormat: TMusicFormatEnum | null
+  setMusicFormat: React.Dispatch<React.SetStateAction<TMusicFormatEnum | null>>
+  musicQuality: TMusicQualityEnum | null
+  setMusicQuality: React.Dispatch<React.SetStateAction<TMusicQualityEnum | null>>
 }
 
-export const SelectMusicDetails = ({ formatTypeButton, value, onChange }: Props) => {
-  const target = FORMAT_TYPE_BUTTON.MUSIC
+export const SelectMusicDetails = ({
+  formatTypeButton,
+  musicFormat,
+  setMusicFormat,
+  musicQuality,
+  setMusicQuality
+}: SelectMusicDetailsProps) => {
+  console.log({ formatTypeButton })
+  if (formatTypeButton !== FORMAT_TYPE_BUTTON.MUSIC) {
+    return null
+  }
+
   return (
     <>
-      <SelectDetails
-        formatTypeButton={formatTypeButton}
-        formatyTypeButtonTarget={target}
-        placeholder="Music Format"
-        options={MUSIC_FORMAT}
-        show="keys"
-        value={value?.musicFormat}
-        onChange={onChange}
-        field={DOWNLOAD_OPTION.MUSIC_FORMAT}
-      />
-
-      <SelectDetails
-        formatTypeButton={formatTypeButton}
-        formatyTypeButtonTarget={target}
-        placeholder="Music Quality"
-        options={MUSIC_QUALITY}
-        show="keys"
-        value={value?.musicQuality}
-        onChange={onChange}
-        field={DOWNLOAD_OPTION.MUSIC_QUALITY}
-      />
+      <SelectMusicFormats musicFormat={musicFormat} setMusicFormat={setMusicFormat} />
+      <SelectMusicQuality musicQuality={musicQuality} setMusicQuality={setMusicQuality} />
     </>
   )
 }
