@@ -1,4 +1,5 @@
 import { Divider, CardFooter, Flex, ButtonGroup, Button } from '@chakra-ui/react'
+import { convertToCapitalCase } from '@renderer/helpers/convert-to-capitalcase'
 import { videoTitleToFilename } from '@renderer/helpers/video-title-to-filename'
 import { FORMAT_TYPE_BUTTON } from '@shared/constants/format-type-button'
 import { IPC_HANDLER } from '@shared/constants/ipc-handler'
@@ -81,7 +82,7 @@ export const DownloaderCardFooter = ({
                     colorScheme="orange"
                     onClick={() => handleClickFormatTypeButton(format)}
                   >
-                    {format.replace(/[A-Z]/g, (char) => ` + ${char}`).toUpperCase()}
+                    {convertToCapitalCase(format)}
                   </Button>
                 ))}
               </ButtonGroup>

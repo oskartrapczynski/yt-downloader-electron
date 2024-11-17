@@ -13,7 +13,7 @@ export const DownloaderContent = ({ downloaderState, metadata, url }: Props) => 
   return (
     <>
       <DownloaderError downloaderState={downloaderState} metadata={metadata} />
-      {<DownloaderCard downloaderState={downloaderState} metadata={metadata} url={url} />}
+      <DownloaderCard downloaderState={downloaderState} metadata={metadata} url={url} />
     </>
   )
 }
