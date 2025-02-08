@@ -1,7 +1,7 @@
 import { DOWNLOAD_OPTION } from '@shared/constants/download-option'
 import { TMusicFormatEnum } from '../enums/music-format'
 import { TMusicQualityEnum } from '../enums/music-quality'
-import { TVideoFormatEnum } from '../enums/video-option'
+import { TVideoFormatEnum } from '../enums/video-format'
 import { TVideoResolutionEnum } from '../enums/video-resolution'
 
 export type TDownloadOption = {

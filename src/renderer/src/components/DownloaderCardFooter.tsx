@@ -4,19 +4,16 @@ import { videoTitleToFilename } from '@renderer/helpers/video-title-to-filename'
 import { DOWNLOAD_OPTION } from '@shared/constants/download-option'
 import { FORMAT_TYPE_BUTTON } from '@shared/constants/format-type-button'
 import { IPC_HANDLER } from '@shared/constants/ipc-handler'
-import { MUSIC_FORMAT } from '@shared/constants/music-format'
 import { TDownloadOptionEnum } from '@shared/types/enums/download-option'
 import { TFormatTypeButtonEnum } from '@shared/types/enums/format-type-button'
 import { TMusicFormatEnum } from '@shared/types/enums/music-format'
 import { TMusicQualityEnum } from '@shared/types/enums/music-quality'
-import { TVideoFormatEnum } from '@shared/types/enums/video-option'
+import { TVideoFormatEnum } from '@shared/types/enums/video-format'
 import { TVideoResolutionEnum } from '@shared/types/enums/video-resolution'
 import { TDownloadOption } from '@shared/types/types/download-option'
 import { TMetaData } from '@shared/types/types/metadata'
 import { useEffect, useState } from 'react'
-import { SelectMusicDetails } from './SelectMusicDetails'
-import { SelectVideoDetails } from './SelectVideoDetails'
-import { SelectVideoMusicDetails } from './SelectVideoMusicDetails'
+import { SelectDetails } from './Select/SelectDetails'
 
 interface Props {
   metadata: TMetaData | null
@@ -35,7 +32,6 @@ export const DownloaderCardFooter = ({
   formatTypeButton,
   handleClickFormatTypeButton,
   downloadOption,
-  handleChangeDownloadOption,
   url
 }: Props) => {
   const [isValidated, setIsValidated] = useState(false)
@@ -43,12 +39,7 @@ export const DownloaderCardFooter = ({
   const [musicQuality, setMusicQuality] = useState<TMusicQualityEnum | null>(null)
   const [videoFormat, setVideoFormat] = useState<TVideoFormatEnum | null>(null)
   const [videoResolution, setVideoResolution] = useState<TVideoResolutionEnum | null>(null)
-  // finish refactor for
-  // - VIDEO
-  // - VIDEO_MUSIC
-
   const toast = useToast()
-
   const { DOWNLOAD_DATA } = IPC_HANDLER
 
   const validateSettingSelects = () => {
@@ -73,13 +64,14 @@ export const DownloaderCardFooter = ({
 
   const handleDownloadClick = async () => {
     if (!isValidated) {
-      return toast({
+      toast({
         title: 'Missing details',
         description: 'Please select all details',
         status: 'warning',
         duration: 3000,
         isClosable: true
       })
+      return
     }
     const fileName = videoTitleToFilename(metadata?.title)
 
@@ -123,25 +115,18 @@ export const DownloaderCardFooter = ({
                   </Button>
                 ))}
               </ButtonGroup>
-              <SelectMusicDetails
+
+              <SelectDetails
                 formatTypeButton={formatTypeButton}
                 musicFormat={musicFormat}
                 setMusicFormat={setMusicFormat}
                 musicQuality={musicQuality}
                 setMusicQuality={setMusicQuality}
+                videoFormat={videoFormat}
+                setVideoFormat={setVideoFormat}
+                videoResolution={videoResolution}
+                setVideoResolution={setVideoResolution}
               />
-              {/* <SelectVideoDetails
-                formatTypeButton={formatTypeButton}
-                videoResolutions={metadata.videoResolution}
-                value={downloadOption}
-                onChange={handleChangeDownloadOption}
-              />
-              <SelectVideoMusicDetails
-                formatTypeButton={formatTypeButton}
-                videoResolutions={metadata.videoResolution}
-                value={downloadOption}
-                onChange={handleChangeDownloadOption}
-              /> */}
 
               {formatTypeButton ? (
                 <Button
