@@ -22,7 +22,7 @@
   },
   "dependencies": {
     "@chakra-ui/react": "^2.8.2",
-    "@distube/ytdl-core": "^4.14.4",
+    "@distube/ytdl-core": "^4.16.0",
     "@electron-toolkit/preload": "^3.0.0",
     "@electron-toolkit/utils": "^3.0.0",
     "@emotion/react": "^11.11.4",
