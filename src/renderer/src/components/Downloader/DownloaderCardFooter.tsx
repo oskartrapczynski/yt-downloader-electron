@@ -13,7 +13,7 @@ import { TVideoResolutionEnum } from '@shared/types/enums/video-resolution'
 import { TDownloadOption } from '@shared/types/types/download-option'
 import { TMetaData } from '@shared/types/types/metadata'
 import { useEffect, useState } from 'react'
-import { SelectDetails } from './Select/SelectDetails'
+import { SelectDetails } from '@renderer/components/Select/SelectDetails'
 
 interface Props {
   metadata: TMetaData | null

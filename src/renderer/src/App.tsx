@@ -1,4 +1,4 @@
-import { DownloaderWrapper } from './components/DownloaderWrapper'
+import { DownloaderWrapper } from './components/Downloader/DownloaderWrapper'
 import { Layout } from './components/Layout'
 
 const App = () => {

@@ -1,5 +1,5 @@
 import { Select } from '@chakra-ui/react'
-import { OptionSelect } from '../OptionSelect'
+import { OptionSelect } from './OptionSelect'
 import { VIDEO_RESOLUTION } from '@shared/constants/video-resolution'
 import { TVideoResolutionEnum } from '@shared/types/enums/video-resolution'
 

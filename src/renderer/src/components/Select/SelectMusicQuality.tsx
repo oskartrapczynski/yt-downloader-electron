@@ -1,7 +1,7 @@
 import { Select } from '@chakra-ui/react'
 import { MUSIC_QUALITY } from '@shared/constants/music-quality'
 import { TMusicQualityEnum } from '@shared/types/enums/music-quality'
-import { OptionSelect } from '../OptionSelect'
+import { OptionSelect } from './OptionSelect'
 
 interface SelectMusicQualityProps {
   musicQuality: TMusicQualityEnum | null

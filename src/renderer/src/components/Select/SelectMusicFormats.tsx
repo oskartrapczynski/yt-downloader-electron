@@ -1,7 +1,7 @@
 import { Select } from '@chakra-ui/react'
 import { MUSIC_FORMAT } from '@shared/constants/music-format'
 import { TMusicFormatEnum } from '@shared/types/enums/music-format'
-import { OptionSelect } from '../OptionSelect'
+import { OptionSelect } from './OptionSelect'
 
 interface SelectMusicFormatsProps {
   musicFormat: ValueOf<typeof MUSIC_FORMAT> | null
