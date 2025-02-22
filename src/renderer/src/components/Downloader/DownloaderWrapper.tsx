@@ -9,11 +9,7 @@ import { DOWNLOADER_STATE } from '@shared/constants/downloader-state'
 
 export const DownloaderWrapper = () => {
   const { GET_METADATA_FROM_URL } = IPC_HANDLER
-
-  // const [url, setUrl] = useState('')
-  const [url, setUrl] = useState(
-    'https://www.youtube.com/watch?v=ixkoVwKQaJg&ab_channel=DJSnakeVEVO'
-  )
+  const [url, setUrl] = useState('')
   const [downloaderState, setDownloaderState] = useState<TDownloaderStateEnum>(
     DOWNLOADER_STATE.NULL
   )
