@@ -3,7 +3,7 @@ import { Card, CardBody, Stack, Image, Text, Skeleton } from '@chakra-ui/react'
 import { TMetaData } from '@shared/types/types/metadata'
 import { useState } from 'react'
 
-import noImage from '../assets/no-image.jpg'
+import noImage from '@renderer/assets/no-image.jpg'
 import { TFormatTypeButtonEnum } from '@shared/types/enums/format-type-button'
 import { DownloaderCardFooter } from './DownloaderCardFooter'
 import { TDownloadOptionEnum } from '@shared/types/enums/download-option'
