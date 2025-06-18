@@ -2,27 +2,29 @@ import { Select } from '@chakra-ui/react'
 import { OptionSelect } from './OptionSelect'
 import { VIDEO_RESOLUTION } from '@shared/constants/video-resolution'
 import { TVideoResolutionEnum } from '@shared/types/enums/video-resolution'
+import { TDownloadOption } from '@shared/types/types/download-option'
 
 interface SelectVideoResolutionProps {
-  videoResolution: ValueOf<typeof VIDEO_RESOLUTION> | null
-  setVideoResolution: React.Dispatch<React.SetStateAction<TVideoResolutionEnum | null>>
+  downloadOption: TDownloadOption
+  setDownloadOption: (value: React.SetStateAction<TDownloadOption>) => void
 }
 
 export const SelectVideoResolution = ({
-  videoResolution,
-  setVideoResolution
+  downloadOption,
+  setDownloadOption
 }: SelectVideoResolutionProps) => {
   const handleChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    const newValue: typeof videoResolution =
-      e.target.value === '' ? null : (e.target.value as TVideoResolutionEnum)
-    setVideoResolution(newValue)
+    setDownloadOption((prev) => ({
+      ...prev,
+      videoResolution: e.target.value as TVideoResolutionEnum
+    }))
   }
 
   return (
     <Select
       placeholder="Video Resolution"
       size="md"
-      value={videoResolution ?? undefined}
+      value={downloadOption.videoResolution ?? VIDEO_RESOLUTION['1080p']}
       onChange={handleChange}
     >
       {Object.values(VIDEO_RESOLUTION).map((format) => (

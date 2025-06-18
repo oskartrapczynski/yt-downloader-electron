@@ -6,20 +6,16 @@ import { FORMAT_TYPE_BUTTON } from '@shared/constants/format-type-button'
 import { IPC_HANDLER } from '@shared/constants/ipc-handler'
 import { TDownloadOptionEnum } from '@shared/types/enums/download-option'
 import { TFormatTypeButtonEnum } from '@shared/types/enums/format-type-button'
-import { TMusicFormatEnum } from '@shared/types/enums/music-format'
-import { TMusicQualityEnum } from '@shared/types/enums/music-quality'
-import { TVideoFormatEnum } from '@shared/types/enums/video-format'
-import { TVideoResolutionEnum } from '@shared/types/enums/video-resolution'
 import { TDownloadOption } from '@shared/types/types/download-option'
 import { TMetaData } from '@shared/types/types/metadata'
-import { useEffect, useState } from 'react'
 import { SelectDetails } from '@renderer/components/Select/SelectDetails'
 
 interface Props {
   metadata: TMetaData | null
   formatTypeButton: TFormatTypeButtonEnum | null
   handleClickFormatTypeButton: (btnText: TFormatTypeButtonEnum) => void
-  downloadOption: TDownloadOption | null
+  downloadOption: TDownloadOption
+  setDownloadOption: (value: React.SetStateAction<TDownloadOption>) => void
   handleChangeDownloadOption: (
     e: React.ChangeEvent<HTMLSelectElement>,
     field: TDownloadOptionEnum
@@ -32,15 +28,12 @@ export const DownloaderCardFooter = ({
   formatTypeButton,
   handleClickFormatTypeButton,
   downloadOption,
+  setDownloadOption,
   url
 }: Props) => {
-  const [isValidated, setIsValidated] = useState(false)
-  const [musicFormat, setMusicFormat] = useState<TMusicFormatEnum | null>(null)
-  const [musicQuality, setMusicQuality] = useState<TMusicQualityEnum | null>(null)
-  const [videoFormat, setVideoFormat] = useState<TVideoFormatEnum | null>(null)
-  const [videoResolution, setVideoResolution] = useState<TVideoResolutionEnum | null>(null)
   const toast = useToast()
   const { DOWNLOAD_DATA } = IPC_HANDLER
+  const { musicFormat, musicQuality, videoFormat, videoResolution } = downloadOption
 
   const validateSettingSelects = () => {
     switch (formatTypeButton) {
@@ -48,22 +41,18 @@ export const DownloaderCardFooter = ({
         return Boolean(musicFormat && musicQuality)
 
       case FORMAT_TYPE_BUTTON.VIDEO:
-        return Boolean(downloadOption?.videoFormat && downloadOption?.videoResolution)
+        return Boolean(videoFormat && videoResolution)
 
       case FORMAT_TYPE_BUTTON.VIDEO_MUSIC:
-        return Boolean(
-          downloadOption?.musicFormat &&
-            downloadOption?.musicQuality &&
-            downloadOption?.videoFormat &&
-            downloadOption?.videoResolution
-        )
+        return Boolean(musicFormat && musicQuality && videoFormat && videoResolution)
       default:
         return false
     }
   }
 
   const handleDownloadClick = async () => {
-    if (!isValidated) {
+    const isValidatedSelects = validateSettingSelects()
+    if (!isValidatedSelects) {
       toast({
         title: 'Missing details',
         description: 'Please select all details',
@@ -76,10 +65,10 @@ export const DownloaderCardFooter = ({
     const fileName = videoTitleToFilename(metadata?.title)
 
     const downloadOption: TDownloadOption = {
-      [DOWNLOAD_OPTION.VIDEO_FORMAT]: videoFormat ?? undefined,
-      [DOWNLOAD_OPTION.MUSIC_FORMAT]: musicFormat ?? undefined,
-      [DOWNLOAD_OPTION.MUSIC_QUALITY]: musicQuality ?? undefined,
-      [DOWNLOAD_OPTION.VIDEO_RESOLUTION]: videoResolution ?? undefined
+      [DOWNLOAD_OPTION.VIDEO_FORMAT]: videoFormat,
+      [DOWNLOAD_OPTION.MUSIC_FORMAT]: musicFormat,
+      [DOWNLOAD_OPTION.MUSIC_QUALITY]: musicQuality,
+      [DOWNLOAD_OPTION.VIDEO_RESOLUTION]: videoResolution
     }
 
     await window.electron.ipcRenderer.invoke(
@@ -90,11 +79,6 @@ export const DownloaderCardFooter = ({
       formatTypeButton
     )
   }
-
-  useEffect(() => {
-    const isValidatedSelects = validateSettingSelects()
-    setIsValidated(isValidatedSelects)
-  }, [musicFormat, musicQuality])
 
   return (
     <>
@@ -118,22 +102,17 @@ export const DownloaderCardFooter = ({
 
               <SelectDetails
                 formatTypeButton={formatTypeButton}
-                musicFormat={musicFormat}
-                setMusicFormat={setMusicFormat}
-                musicQuality={musicQuality}
-                setMusicQuality={setMusicQuality}
-                videoFormat={videoFormat}
-                setVideoFormat={setVideoFormat}
-                videoResolution={videoResolution}
-                setVideoResolution={setVideoResolution}
+                downloadOption={downloadOption}
+                setDownloadOption={setDownloadOption}
               />
 
               {formatTypeButton ? (
                 <Button
-                  variant={isValidated ? 'solid' : 'outline'}
-                  colorScheme={isValidated ? 'green' : 'orange'}
+                  variant={'solid'}
+                  colorScheme={'green'}
+                  // variant={isValidated ? 'solid' : 'outline'}
+                  // colorScheme={isValidated ? 'green' : 'orange'}
                   onClick={handleDownloadClick}
-                  disabled={true}
                 >
                   DOWNLOAD
                 </Button>

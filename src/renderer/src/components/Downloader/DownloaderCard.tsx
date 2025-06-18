@@ -82,8 +82,9 @@ export const DownloaderCard = ({ downloaderState, metadata, url }: Props) => {
           metadata={metadata}
           formatTypeButton={formatTypeButton}
           handleClickFormatTypeButton={handleClickFormatTypeButton}
-          downloadOption={downloadOption}
           handleChangeDownloadOption={handleChangeDownloadOption}
+          downloadOption={downloadOption}
+          setDownloadOption={setDownloadOption}
           url={url}
         />
       ) : null}

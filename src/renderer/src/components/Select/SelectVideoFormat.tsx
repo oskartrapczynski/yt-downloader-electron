@@ -2,24 +2,26 @@ import { Select } from '@chakra-ui/react'
 import { OptionSelect } from './OptionSelect'
 import { VIDEO_FORMAT } from '@shared/constants/video-format'
 import { TVideoFormatEnum } from '@shared/types/enums/video-format'
+import { TDownloadOption } from '@shared/types/types/download-option'
 
 interface SelectVideoFormatProps {
-  videoFormat: ValueOf<typeof VIDEO_FORMAT> | null
-  setVideoFormat: React.Dispatch<React.SetStateAction<TVideoFormatEnum | null>>
+  downloadOption: TDownloadOption
+  setDownloadOption: (value: React.SetStateAction<TDownloadOption>) => void
 }
 
-export const SelectVideoFormat = ({ videoFormat, setVideoFormat }: SelectVideoFormatProps) => {
+export const SelectVideoFormat = ({
+  downloadOption,
+  setDownloadOption
+}: SelectVideoFormatProps) => {
   const handleChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    const newValue: typeof videoFormat =
-      e.target.value === '' ? null : (e.target.value as TVideoFormatEnum)
-    setVideoFormat(newValue)
+    setDownloadOption((prev) => ({ ...prev, videoFormat: e.target.value as TVideoFormatEnum }))
   }
 
   return (
     <Select
       placeholder="Video Format"
       size="md"
-      value={videoFormat ?? undefined}
+      value={downloadOption.videoFormat ?? VIDEO_FORMAT.MP4}
       onChange={handleChange}
     >
       {Object.values(VIDEO_FORMAT).map((format) => (
