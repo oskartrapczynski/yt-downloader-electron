@@ -2,7 +2,6 @@ import { app, shell, BrowserWindow, ipcMain } from 'electron'
 import { join } from 'path'
 import { electronApp, optimizer, is } from '@electron-toolkit/utils'
 import icon from '../../resources/icon.png?asset'
-
 import { IPC_HANDLER } from '@shared/constants/ipc-handler'
 import { getMetaDataFromURL } from '@main/handlers/get-metadata-from-url'
 import { downloadData } from './handlers/download-data'
@@ -13,13 +12,18 @@ function createWindow(): void {
   // Create the browser window.
   const mainWindow = new BrowserWindow({
     width: 900,
-    height: 670,
+    height: 600,
     show: false,
+    minWidth: 900,
+    minHeight: 600,
     autoHideMenuBar: true,
+    icon,
     ...(process.platform === 'linux' ? { icon } : {}),
     webPreferences: {
       preload: join(__dirname, '../preload/index.js'),
-      sandbox: false
+      sandbox: false,
+      webSecurity: true,
+      nodeIntegration: true
     }
   })
 
