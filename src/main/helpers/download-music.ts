@@ -1,8 +1,9 @@
 import { TDownloadOption } from '@shared/types/types/download-option'
 import { getDownloadFolderPath } from './get-download-folder-path'
 import { exec } from 'child_process'
-import { join } from 'path'
+import { join, dirname } from 'path'
 import { app } from 'electron'
+import ffmpegPath from 'ffmpeg-static'
 
 export const downloadMusic = async (
   youtubeUrl: string,
@@ -12,6 +13,10 @@ export const downloadMusic = async (
   // TODO: connect musicQuality
 ) => {
   try {
+    if (!ffmpegPath) throw new Error('ffmpegPath is not defined')
+
+    const ffmpegLocation = dirname(ffmpegPath)
+
     return new Promise((resolve, reject) => {
       console.log('download Music')
       const ytdlpFile =
@@ -33,7 +38,7 @@ export const downloadMusic = async (
 
       const downloadDir = getDownloadFolderPath()
 
-      const command = `"${commandPath}" --extract-audio --audio-format mp3 -o "${downloadDir}/${fileName}.${musicFormat}" ${youtubeUrl}`
+      const command = `"${commandPath}" --extract-audio --audio-format mp3 --ffmpeg-location "${ffmpegLocation}" -o "${downloadDir}/${fileName}.${musicFormat}" ${youtubeUrl}`
 
       exec(command, (error, stdout, stderr) => {
         if (error) {
