@@ -3,10 +3,10 @@ import { join } from 'path'
 import { electronApp, optimizer, is } from '@electron-toolkit/utils'
 import icon from '../../resources/icon.png?asset'
 import { IPC_HANDLER } from '@shared/constants/ipc-handler'
-import { getMetaDataFromURL } from '@main/handlers/get-metadata-from-url'
 import { downloadData } from './handlers/download-data'
+import { fetchSongInfo } from '@main/handlers/fetch-song-info'
 
-const { GET_METADATA_FROM_URL, DOWNLOAD_DATA } = IPC_HANDLER
+const { FETCH_SONG_INFO, DOWNLOAD_DATA } = IPC_HANDLER
 
 function createWindow(): void {
   // Create the browser window.
@@ -61,7 +61,7 @@ app.whenReady().then(() => {
 
   // IPC test
   ipcMain.on('ping', () => console.log('pong'))
-  ipcMain.handle(GET_METADATA_FROM_URL, getMetaDataFromURL)
+  ipcMain.handle(FETCH_SONG_INFO, fetchSongInfo)
   ipcMain.handle(DOWNLOAD_DATA, downloadData)
 
   createWindow()

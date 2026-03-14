@@ -7,8 +7,9 @@ import { IPC_HANDLER } from '@shared/constants/ipc-handler'
 import { TDownloaderStateEnum } from '@shared/types/enums/downloader-state'
 import { DOWNLOADER_STATE } from '@shared/constants/downloader-state'
 
+const { FETCH_SONG_INFO } = IPC_HANDLER
+
 export const DownloaderWrapper = () => {
-  const { GET_METADATA_FROM_URL } = IPC_HANDLER
   const [url, setUrl] = useState('')
   const [downloaderState, setDownloaderState] = useState<TDownloaderStateEnum>(
     DOWNLOADER_STATE.NULL
@@ -20,7 +21,7 @@ export const DownloaderWrapper = () => {
   }
   const handleClick = async () => {
     setDownloaderState(DOWNLOADER_STATE.LOADING)
-    const resMetadata = await window.electron.ipcRenderer.invoke(GET_METADATA_FROM_URL, url)
+    const resMetadata = await window.electron.ipcRenderer.invoke(FETCH_SONG_INFO, url)
     setDownloaderState(DOWNLOADER_STATE.DONE)
     setMetadata(resMetadata)
   }

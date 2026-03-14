@@ -1,12 +1,12 @@
 import { downloadData } from '@main/handlers/download-data'
-import { getMetaDataFromURL } from '@main/handlers/get-metadata-from-url'
+import { fetchSongInfo } from '@main/handlers/fetch-song-info'
 import { IPC_HANDLER } from '@shared/constants/ipc-handler'
 
-const { GET_METADATA_FROM_URL, DOWNLOAD_DATA } = IPC_HANDLER
+const { FETCH_SONG_INFO, DOWNLOAD_DATA } = IPC_HANDLER
 
 export default interface ICustomAPI {
   //invokes
-  [GET_METADATA_FROM_URL]: typeof getMetaDataFromURL
+  [FETCH_SONG_INFO]: typeof fetchSongInfo
   [DOWNLOAD_DATA]: typeof downloadData
   // -----------
   //api

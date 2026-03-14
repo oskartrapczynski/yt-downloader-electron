@@ -1,8 +1,6 @@
 import { Card, CardBody, Stack, Image, Text, Skeleton } from '@chakra-ui/react'
-
 import { TMetaData } from '@shared/types/types/metadata'
 import { useState } from 'react'
-
 import noImage from '@renderer/assets/no-image.jpg'
 import { TFormatTypeButtonEnum } from '@shared/types/enums/format-type-button'
 import { DownloaderCardFooter } from './DownloaderCardFooter'
@@ -23,6 +21,13 @@ export const DownloaderCard = ({ downloaderState, metadata, url }: Props) => {
 
   const [downloadOption, setDownloadOption] = useState<TDownloadOption>(INIT_DOWNLOAD_OPTION)
 
+  const { authorName, thumbnailUrl, title, isError } = metadata || {}
+
+  const shouldNotRender = downloaderState === DOWNLOADER_STATE.NULL
+  const hasError = isError === true
+
+  if (shouldNotRender || hasError) return null
+
   const isLoading = downloaderState === DOWNLOADER_STATE.LOADING
 
   const handleClickFormatTypeButton = (btnText: TFormatTypeButtonEnum) => {
@@ -40,39 +45,23 @@ export const DownloaderCard = ({ downloaderState, metadata, url }: Props) => {
     }))
   }
 
-  const shouldNotRender = downloaderState === DOWNLOADER_STATE.NULL
-  const hasError = metadata?.isError === true
-
-  if (shouldNotRender || hasError) return null
-
   return (
     <Card maxW="md">
       <CardBody>
         <Skeleton isLoaded={!isLoading}>
-          <Image
-            src={metadata?.thumbnailUrl ? metadata.thumbnailUrl : noImage}
-            alt="atwork"
-            borderRadius="lg"
-          />
+          <Image src={thumbnailUrl ? thumbnailUrl : noImage} alt="atwork" borderRadius="lg" />
         </Skeleton>
-
         <Stack mt="6" spacing="3">
           <Skeleton isLoaded={!isLoading}>
             <Text>
               <Text as="b">Channel: </Text>
-              {metadata?.author ? metadata.author : '-'}
+              {authorName}
             </Text>
           </Skeleton>
           <Skeleton isLoaded={!isLoading}>
             <Text>
               <Text as="b">Title: </Text>
-              {metadata?.title ? metadata.title : '-'}
-            </Text>
-          </Skeleton>
-          <Skeleton isLoaded={!isLoading}>
-            <Text>
-              <Text as="b">Views: </Text>
-              {metadata?.viewCount ? metadata.viewCount.replace(/\B(?=(\d{3})+(?!\d))/g, ',') : '?'}
+              {title ? title : '-'}
             </Text>
           </Skeleton>
         </Stack>
