@@ -1,9 +1,10 @@
 import { TDownloadOption } from '@shared/types/types/download-option'
 import { getDownloadFolderPath } from './get-download-folder-path'
+import { getBinaryPath } from './get-binary-path'
 import { exec } from 'child_process'
-import { join, dirname } from 'path'
 import { app } from 'electron'
 import ffmpegPath from 'ffmpeg-static'
+import { dirname } from 'path'
 
 export const downloadMusic = async (
   youtubeUrl: string,
@@ -19,23 +20,9 @@ export const downloadMusic = async (
 
     return new Promise((resolve, reject) => {
       console.log('download Music')
-      const ytdlpFile =
-        process.platform === 'darwin'
-          ? 'yt-dlp_macos'
-          : process.platform === 'win32'
-            ? 'yt-dlp.exe'
-            : 'yt-dlp'
-
       console.log({ isPackaged: app.isPackaged, dirname: __dirname, fileName })
 
-      const commandPath = join(
-        app.isPackaged
-          ? join(app.getAppPath()).replace('app.asar', 'app.asar.unpacked')
-          : join(app.getAppPath()),
-        'resources',
-        ytdlpFile
-      )
-
+      const commandPath = getBinaryPath({ target: 'yt-dlp' })
       const downloadDir = getDownloadFolderPath()
 
       const command = `"${commandPath}" --extract-audio --audio-format mp3 --ffmpeg-location "${ffmpegLocation}" -o "${downloadDir}/${fileName}.${musicFormat}" ${youtubeUrl}`
