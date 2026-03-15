@@ -1,6 +1,6 @@
 export const MUSIC_FORMAT = {
+  MP3: 'mp3',
   WAV: 'wav',
-  MP3: 'mp3'
-  // AIFF: 'aiff',
-  // FLAC: 'flac'
+  AIFF: 'aiff',
+  FLAC: 'flac'
 } as const

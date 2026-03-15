@@ -1,4 +1,4 @@
-import { Select } from '@chakra-ui/react'
+import { Select, Text } from '@chakra-ui/react'
 import { MUSIC_QUALITY } from '@shared/constants/music-quality'
 import { TMusicQualityEnum } from '@shared/types/enums/music-quality'
 import { OptionSelect } from './OptionSelect'
@@ -9,6 +9,12 @@ interface SelectMusicQualityProps {
   setDownloadOption: (value: React.SetStateAction<TDownloadOption>) => void
 }
 
+const DISABLED_QUALITIES: TMusicQualityEnum[] = [
+  MUSIC_QUALITY.LOW,
+  MUSIC_QUALITY.MEDIUM,
+  MUSIC_QUALITY.HIGH
+]
+
 export const SelectMusicQuality = ({
   downloadOption,
   setDownloadOption
@@ -18,15 +24,21 @@ export const SelectMusicQuality = ({
   }
 
   return (
-    <Select
-      placeholder="Music Quality"
-      size="md"
-      value={downloadOption.musicQuality ?? MUSIC_QUALITY.BEST}
-      onChange={handleChange}
-    >
-      {Object.values(MUSIC_QUALITY).map((quality) => (
-        <OptionSelect key={`music-quality-${quality}`} property={quality.toUpperCase()} />
-      ))}
-    </Select>
+    <>
+      <Text>Music Quality:</Text>
+      <Select
+        size="md"
+        value={downloadOption.musicQuality ?? MUSIC_QUALITY.BEST}
+        onChange={handleChange}
+      >
+        {Object.values(MUSIC_QUALITY).map((quality) => (
+          <OptionSelect
+            key={`music-quality-${quality}`}
+            property={quality.toUpperCase()}
+            disabled={DISABLED_QUALITIES.includes(quality)}
+          />
+        ))}
+      </Select>
+    </>
   )
 }

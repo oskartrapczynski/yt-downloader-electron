@@ -35,6 +35,10 @@ export const DownloaderCardFooter = ({
   const { DOWNLOAD_DATA } = IPC_HANDLER
   const { musicFormat, musicQuality, videoFormat, videoResolution } = downloadOption
 
+  const isTabDisabled =
+    formatTypeButton === FORMAT_TYPE_BUTTON.VIDEO_MUSIC ||
+    formatTypeButton === FORMAT_TYPE_BUTTON.VIDEO
+
   const validateSettingSelects = () => {
     switch (formatTypeButton) {
       case FORMAT_TYPE_BUTTON.MUSIC:
@@ -106,14 +110,8 @@ export const DownloaderCardFooter = ({
                 setDownloadOption={setDownloadOption}
               />
 
-              {formatTypeButton ? (
-                <Button
-                  variant={'solid'}
-                  colorScheme={'green'}
-                  // variant={isValidated ? 'solid' : 'outline'}
-                  // colorScheme={isValidated ? 'green' : 'orange'}
-                  onClick={handleDownloadClick}
-                >
+              {formatTypeButton && !isTabDisabled ? (
+                <Button variant="solid" colorScheme="green" onClick={handleDownloadClick}>
                   DOWNLOAD
                 </Button>
               ) : null}
