@@ -39,13 +39,17 @@ export const ensureYtDlpUpToDate = async (): Promise<void> => {
   const destPath = join(binDir, filename)
   const tmpPath = `${destPath}.download`
 
+  console.log('[yt-dlp] checking for updates...')
   try {
     const res = await fetch(RELEASE_API, { headers: { Accept: 'application/json' } })
     if (!res.ok) throw new Error(`release API HTTP ${res.status}`)
     const { tag_name: latest } = (await res.json()) as { tag_name: string }
 
     const installed = await readInstalledVersion(versionFile)
-    if (installed === latest) return
+    if (installed === latest) {
+      console.log(`[yt-dlp] already up to date (${latest})`)
+      return
+    }
 
     console.log(`[yt-dlp] updating ${installed ?? 'bundled'} -> ${latest}`)
     await mkdir(binDir, { recursive: true })
