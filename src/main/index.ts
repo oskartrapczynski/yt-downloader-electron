@@ -5,6 +5,7 @@ import icon from '../../resources/icon.png?asset'
 import { IPC_HANDLER } from '@shared/constants/ipc-handler'
 import { downloadData } from './handlers/download-data'
 import { fetchSongInfo } from '@main/handlers/fetch-song-info'
+import { ensureYtDlpUpToDate } from './helpers/ensure-ytdlp'
 
 const { FETCH_SONG_INFO, DOWNLOAD_DATA } = IPC_HANDLER
 
@@ -65,6 +66,8 @@ app.whenReady().then(() => {
   ipcMain.handle(DOWNLOAD_DATA, downloadData)
 
   createWindow()
+
+  ensureYtDlpUpToDate()
 
   app.on('activate', function () {
     // On macOS it's common to re-create a window in the app when the
