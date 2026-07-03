@@ -1,14 +1,12 @@
 import { TDownloadOption } from '@shared/types/types/download-option'
 import { getDownloadFolderPath } from './get-download-folder-path'
-import { getBinaryPath } from './get-binary-path'
+import { getBinaryPath, getFfmpegLocation } from './get-binary-path'
 import { audioBitrateMap } from './audio-bitrate.map'
 import { getJsRuntimeArgs } from './get-js-runtime'
 import { MUSIC_FORMAT } from '@shared/constants/music-format'
 import { VIDEO_FORMAT } from '@shared/constants/video-format'
 import { execFile } from 'child_process'
 import { app } from 'electron'
-import ffmpegPath from 'ffmpeg-static'
-import { dirname } from 'path'
 
 // Containers that YouTube's native codecs can be remuxed into without re-encoding.
 // Everything else must be re-encoded with ffmpeg (--recode-video).
@@ -22,9 +20,7 @@ export const downloadVideoMusic = async (
   videoResolution: TDownloadOption['videoResolution'],
   isPlaylist: boolean
 ) => {
-  if (!ffmpegPath) throw new Error('ffmpegPath is not defined')
-
-  const ffmpegLocation = dirname(ffmpegPath)
+  const ffmpegLocation = getFfmpegLocation()
   const commandPath = getBinaryPath({ target: 'yt-dlp' })
   const downloadDir = getDownloadFolderPath()
 
@@ -35,13 +31,19 @@ export const downloadVideoMusic = async (
   const height = parseInt(videoResolution, 10)
 
   const outputTemplate = isPlaylist
-    ? `${downloadDir}/%(playlist_index)s - %(title)s.%(ext)s`
+    ? `${downloadDir}/%(title)s.%(ext)s`
     : `${downloadDir}/${fileName}.%(ext)s`
+
+  // Prefer H.264 video + AAC audio (widely compatible and reliably downloadable);
+  // fall back to any stream at the requested resolution if H.264 isn't offered.
+  const format =
+    `bv*[height<=${height}][vcodec^=avc1]+ba[acodec^=mp4a]/` +
+    `bv*[height<=${height}][vcodec^=avc1]+ba/b[height<=${height}]`
 
   const args = [
     ...getJsRuntimeArgs(),
     '-f',
-    `bv*[height<=${height}]+ba/b[height<=${height}]`,
+    format,
     '--ffmpeg-location',
     ffmpegLocation,
     '--embed-metadata',

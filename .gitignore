@@ -8,3 +8,7 @@ out
 #icons
 Icon?
 icon.ico
+
+# Runtime binaries fetched at build time (npm run fetch-binaries)
+resources/*
+!resources/icon.png

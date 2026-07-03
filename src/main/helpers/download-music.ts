@@ -1,14 +1,12 @@
 import { TDownloadOption } from '@shared/types/types/download-option'
 import { getDownloadFolderPath } from './get-download-folder-path'
-import { getBinaryPath } from './get-binary-path'
+import { getBinaryPath, getFfmpegLocation } from './get-binary-path'
 import { audioBitrateMap } from './audio-bitrate.map'
 import { getJsRuntimeArgs } from './get-js-runtime'
 import { isLosslessMusicFormat } from '@shared/constants/lossless-music-format'
 import { MUSIC_FORMAT } from '@shared/constants/music-format'
 import { execFile } from 'child_process'
 import { app } from 'electron'
-import ffmpegPath from 'ffmpeg-static'
-import { dirname } from 'path'
 
 // Formats that support an embedded thumbnail / cover art.
 const THUMBNAIL_CAPABLE_FORMATS: TDownloadOption['musicFormat'][] = [
@@ -23,9 +21,7 @@ export const downloadMusic = async (
   musicQuality: TDownloadOption['musicQuality'],
   isPlaylist: boolean
 ) => {
-  if (!ffmpegPath) throw new Error('ffmpegPath is not defined')
-
-  const ffmpegLocation = dirname(ffmpegPath)
+  const ffmpegLocation = getFfmpegLocation()
   const commandPath = getBinaryPath({ target: 'yt-dlp' })
   const downloadDir = getDownloadFolderPath()
 
@@ -33,7 +29,7 @@ export const downloadMusic = async (
   console.log({ isPackaged: app.isPackaged, dirname: __dirname, fileName, musicFormat, musicQuality })
 
   const outputTemplate = isPlaylist
-    ? `${downloadDir}/%(playlist_index)s - %(title)s.%(ext)s`
+    ? `${downloadDir}/%(title)s.%(ext)s`
     : `${downloadDir}/${fileName}.%(ext)s`
 
   const args = [

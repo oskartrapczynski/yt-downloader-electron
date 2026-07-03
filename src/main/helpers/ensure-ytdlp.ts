@@ -9,14 +9,17 @@ import { pipeline } from 'node:stream/promises'
 const RELEASE_API = 'https://api.github.com/repos/yt-dlp/yt-dlp/releases/latest'
 const RELEASE_BASE = 'https://github.com/yt-dlp/yt-dlp/releases/latest/download'
 
+// `asset` is the name of the GitHub release asset (remote); `filename` is the
+// canonical local name we save it under, matching what get-binary-path.ts resolves.
 const getPlatformAsset = (): { asset: string; filename: string; executable: boolean } => {
   if (process.platform === 'darwin') {
-    return { asset: 'yt-dlp_macos', filename: 'yt-dlp_macos', executable: true }
+    return { asset: 'yt-dlp_macos', filename: 'yt-dlp', executable: true }
   }
   if (process.platform === 'win32') {
     return { asset: 'yt-dlp.exe', filename: 'yt-dlp.exe', executable: false }
   }
-  return { asset: 'yt-dlp_linux', filename: 'yt-dlp', executable: true }
+  const asset = process.arch === 'arm64' ? 'yt-dlp_linux_aarch64' : 'yt-dlp_linux'
+  return { asset, filename: 'yt-dlp', executable: true }
 }
 
 export const getUserBinDir = (): string => join(app.getPath('userData'), 'bin')

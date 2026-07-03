@@ -1,12 +1,10 @@
 import { TDownloadOption } from '@shared/types/types/download-option'
 import { getDownloadFolderPath } from './get-download-folder-path'
-import { getBinaryPath } from './get-binary-path'
+import { getBinaryPath, getFfmpegLocation } from './get-binary-path'
 import { getJsRuntimeArgs } from './get-js-runtime'
 import { VIDEO_FORMAT } from '@shared/constants/video-format'
 import { execFile } from 'child_process'
 import { app } from 'electron'
-import ffmpegPath from 'ffmpeg-static'
-import { dirname } from 'path'
 
 // Containers YouTube's native codecs can be remuxed into without re-encoding.
 const REMUX_CONTAINERS: TDownloadOption['videoFormat'][] = [VIDEO_FORMAT.MP4]
@@ -18,9 +16,7 @@ export const downloadVideo = async (
   videoResolution: TDownloadOption['videoResolution'],
   isPlaylist: boolean
 ) => {
-  if (!ffmpegPath) throw new Error('ffmpegPath is not defined')
-
-  const ffmpegLocation = dirname(ffmpegPath)
+  const ffmpegLocation = getFfmpegLocation()
   const commandPath = getBinaryPath({ target: 'yt-dlp' })
   const downloadDir = getDownloadFolderPath()
 
@@ -31,13 +27,17 @@ export const downloadVideo = async (
   const height = parseInt(videoResolution, 10)
 
   const outputTemplate = isPlaylist
-    ? `${downloadDir}/%(playlist_index)s - %(title)s.%(ext)s`
+    ? `${downloadDir}/%(title)s.%(ext)s`
     : `${downloadDir}/${fileName}.%(ext)s`
+
+  // Prefer H.264 (widely compatible); fall back to any stream at the requested resolution.
+  const format =
+    `bv*[height<=${height}][vcodec^=avc1]/bv*[height<=${height}]/b[height<=${height}]`
 
   const args = [
     ...getJsRuntimeArgs(),
     '-f',
-    `bv*[height<=${height}]/b[height<=${height}]`,
+    format,
     '--ffmpeg-location',
     ffmpegLocation,
     '--embed-metadata',
