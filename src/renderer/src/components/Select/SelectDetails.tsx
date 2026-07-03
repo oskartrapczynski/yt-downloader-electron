@@ -1,3 +1,4 @@
+import { Checkbox } from '@chakra-ui/react'
 import { FORMAT_TYPE_BUTTON } from '@shared/constants/format-type-button'
 import { SelectMusicFormats } from './SelectMusicFormats'
 import { SelectMusicQuality } from './SelectMusicQuality'
@@ -17,11 +18,23 @@ export const SelectDetails = ({
   downloadOption,
   setDownloadOption
 }: SelectDetailsProps) => {
+  const playlistCheckbox = (
+    <Checkbox
+      isChecked={downloadOption.isPlaylist}
+      onChange={(e) =>
+        setDownloadOption((prev) => ({ ...prev, isPlaylist: e.target.checked }))
+      }
+    >
+      Download entire playlist
+    </Checkbox>
+  )
+
   if (formatTypeButton === FORMAT_TYPE_BUTTON.MUSIC) {
     return (
       <>
         <SelectMusicFormats downloadOption={downloadOption} setDownloadOption={setDownloadOption} />
         <SelectMusicQuality downloadOption={downloadOption} setDownloadOption={setDownloadOption} />
+        {playlistCheckbox}
       </>
     )
   }
@@ -33,6 +46,7 @@ export const SelectDetails = ({
           downloadOption={downloadOption}
           setDownloadOption={setDownloadOption}
         />
+        {playlistCheckbox}
       </>
     )
   }
@@ -44,8 +58,8 @@ export const SelectDetails = ({
           downloadOption={downloadOption}
           setDownloadOption={setDownloadOption}
         />
-        <SelectMusicFormats downloadOption={downloadOption} setDownloadOption={setDownloadOption} />
         <SelectMusicQuality downloadOption={downloadOption} setDownloadOption={setDownloadOption} />
+        {playlistCheckbox}
       </>
     )
   }

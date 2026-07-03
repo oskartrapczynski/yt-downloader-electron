@@ -8,5 +8,6 @@ export const INIT_DOWNLOAD_OPTION: TDownloadOption = {
   musicFormat: MUSIC_FORMAT.MP3,
   musicQuality: MUSIC_QUALITY.BEST,
   videoFormat: VIDEO_FORMAT.MP4,
-  videoResolution: VIDEO_RESOLUTION['1080p']
+  videoResolution: VIDEO_RESOLUTION['1080p'],
+  isPlaylist: false
 }

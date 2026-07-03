@@ -1,4 +1,5 @@
 import { Divider, CardFooter, Flex, ButtonGroup, Button, useToast } from '@chakra-ui/react'
+import { useState } from 'react'
 import { convertToCapitalCase } from '@renderer/helpers/convert-to-capitalcase'
 import { videoTitleToFilename } from '@renderer/helpers/video-title-to-filename'
 import { DOWNLOAD_OPTION } from '@shared/constants/download-option'
@@ -32,12 +33,9 @@ export const DownloaderCardFooter = ({
   url
 }: Props) => {
   const toast = useToast()
+  const [isDownloading, setIsDownloading] = useState(false)
   const { DOWNLOAD_DATA } = IPC_HANDLER
-  const { musicFormat, musicQuality, videoFormat, videoResolution } = downloadOption
-
-  const isTabDisabled =
-    formatTypeButton === FORMAT_TYPE_BUTTON.VIDEO_MUSIC ||
-    formatTypeButton === FORMAT_TYPE_BUTTON.VIDEO
+  const { musicFormat, musicQuality, videoFormat, videoResolution, isPlaylist } = downloadOption
 
   const validateSettingSelects = () => {
     switch (formatTypeButton) {
@@ -48,7 +46,7 @@ export const DownloaderCardFooter = ({
         return Boolean(videoFormat && videoResolution)
 
       case FORMAT_TYPE_BUTTON.VIDEO_MUSIC:
-        return Boolean(musicFormat && musicQuality && videoFormat && videoResolution)
+        return Boolean(musicQuality && videoFormat && videoResolution)
       default:
         return false
     }
@@ -72,16 +70,48 @@ export const DownloaderCardFooter = ({
       [DOWNLOAD_OPTION.VIDEO_FORMAT]: videoFormat,
       [DOWNLOAD_OPTION.MUSIC_FORMAT]: musicFormat,
       [DOWNLOAD_OPTION.MUSIC_QUALITY]: musicQuality,
-      [DOWNLOAD_OPTION.VIDEO_RESOLUTION]: videoResolution
+      [DOWNLOAD_OPTION.VIDEO_RESOLUTION]: videoResolution,
+      [DOWNLOAD_OPTION.IS_PLAYLIST]: isPlaylist
     }
 
-    await window.electron.ipcRenderer.invoke(
-      DOWNLOAD_DATA,
-      url,
-      fileName,
-      downloadOption,
-      formatTypeButton
-    )
+    setIsDownloading(true)
+    try {
+      const result = await window.electron.ipcRenderer.invoke(
+        DOWNLOAD_DATA,
+        url,
+        fileName,
+        downloadOption,
+        formatTypeButton
+      )
+
+      if (result?.isError) {
+        toast({
+          title: 'Download failed',
+          description: result.message || 'Something went wrong',
+          status: 'error',
+          duration: 5000,
+          isClosable: true
+        })
+      } else {
+        toast({
+          title: 'Download complete',
+          description: 'Saved to your Downloads folder',
+          status: 'success',
+          duration: 3000,
+          isClosable: true
+        })
+      }
+    } catch (err) {
+      toast({
+        title: 'Download failed',
+        description: (err as Error)?.message || 'Something went wrong',
+        status: 'error',
+        duration: 5000,
+        isClosable: true
+      })
+    } finally {
+      setIsDownloading(false)
+    }
   }
 
   return (
@@ -110,8 +140,14 @@ export const DownloaderCardFooter = ({
                 setDownloadOption={setDownloadOption}
               />
 
-              {formatTypeButton && !isTabDisabled ? (
-                <Button variant="solid" colorScheme="green" onClick={handleDownloadClick}>
+              {formatTypeButton ? (
+                <Button
+                  variant="solid"
+                  colorScheme="green"
+                  onClick={handleDownloadClick}
+                  isLoading={isDownloading}
+                  loadingText="Downloading"
+                >
                   DOWNLOAD
                 </Button>
               ) : null}

@@ -1,46 +1,81 @@
 import { TDownloadOption } from '@shared/types/types/download-option'
 import { getDownloadFolderPath } from './get-download-folder-path'
 import { getBinaryPath } from './get-binary-path'
-import { exec } from 'child_process'
+import { audioBitrateMap } from './audio-bitrate.map'
+import { getJsRuntimeArgs } from './get-js-runtime'
+import { MUSIC_FORMAT } from '@shared/constants/music-format'
+import { VIDEO_FORMAT } from '@shared/constants/video-format'
+import { execFile } from 'child_process'
 import { app } from 'electron'
+import ffmpegPath from 'ffmpeg-static'
+import { dirname } from 'path'
+
+// Containers that YouTube's native codecs can be remuxed into without re-encoding.
+// Everything else must be re-encoded with ffmpeg (--recode-video).
+const REMUX_CONTAINERS: TDownloadOption['videoFormat'][] = [VIDEO_FORMAT.MP4]
 
 export const downloadVideoMusic = async (
   youtubeUrl: string,
   fileName: string,
-  musicFormat: TDownloadOption['musicFormat'],
   musicQuality: TDownloadOption['musicQuality'],
   videoFormat: TDownloadOption['videoFormat'],
-  videoResolution: TDownloadOption['videoResolution']
-  // TODO:
-  // 1. musicQuality
-  // 2. videoResolution
+  videoResolution: TDownloadOption['videoResolution'],
+  isPlaylist: boolean
 ) => {
-  try {
-    return new Promise((resolve, reject) => {
-      console.log('download VideoMusic')
-      console.log({ isPackaged: app.isPackaged, dirname: __dirname, fileName })
+  if (!ffmpegPath) throw new Error('ffmpegPath is not defined')
 
-      const commandPath = getBinaryPath({ target: 'yt-dlp' })
+  const ffmpegLocation = dirname(ffmpegPath)
+  const commandPath = getBinaryPath({ target: 'yt-dlp' })
+  const downloadDir = getDownloadFolderPath()
 
-      const downloadDir = getDownloadFolderPath()
+  console.log('download VideoMusic')
+  console.log({ isPackaged: app.isPackaged, dirname: __dirname, fileName, videoFormat, videoResolution })
 
-      const command = `"${commandPath}" -f "bv[height<=1080][vcodec^=avc1]+ba[acodec^=mp4a]" --merge-output-format ${videoFormat} --audio-format ${musicFormat} --output "${downloadDir}/${fileName}" ${youtubeUrl}`
-      // zmienic wszystkie resolutions (np 1080p na 1080)
+  // '1080p' -> 1080
+  const height = parseInt(videoResolution, 10)
 
-      exec(command, (error, stdout, stderr) => {
-        if (error) {
-          console.error(`Error executing yt-dlp: ${error.message}`)
-          reject(error)
-        }
-        if (stderr) {
-          console.error(`stderr: ${stderr}`)
-          reject(stderr)
-        }
-        console.log(`stdout: ${stdout}`)
-        resolve('Downloaded complete')
-      })
-    })
-  } catch (err) {
-    console.log(err)
+  const outputTemplate = isPlaylist
+    ? `${downloadDir}/%(playlist_index)s - %(title)s.%(ext)s`
+    : `${downloadDir}/${fileName}.%(ext)s`
+
+  const args = [
+    ...getJsRuntimeArgs(),
+    '-f',
+    `bv*[height<=${height}]+ba/b[height<=${height}]`,
+    '--ffmpeg-location',
+    ffmpegLocation,
+    '--embed-metadata',
+    isPlaylist ? '--yes-playlist' : '--no-playlist',
+    '-o',
+    outputTemplate
+  ]
+
+  if (REMUX_CONTAINERS.includes(videoFormat)) {
+    // Remux into the container (no re-encode). Audio is copied, so quality can't change here.
+    args.push('--merge-output-format', videoFormat)
+  } else {
+    // Re-encode into the chosen container with ffmpeg.
+    args.push('--recode-video', videoFormat)
+
+    // Apply the selected audio bitrate during the re-encode (uses the lossy tier scale).
+    const bitrate = audioBitrateMap[MUSIC_FORMAT.MP3]?.[musicQuality]
+    if (bitrate) {
+      args.push('--postprocessor-args', `VideoConvertor:-b:a ${bitrate}k`)
+    }
   }
+
+  args.push(youtubeUrl)
+
+  return new Promise((resolve, reject) => {
+    execFile(commandPath, args, (error, stdout, stderr) => {
+      if (stderr) console.error(`stderr: ${stderr}`)
+      if (error) {
+        console.error(`Error executing yt-dlp: ${error.message}`)
+        reject(error)
+        return
+      }
+      console.log(`stdout: ${stdout}`)
+      resolve('Downloaded complete')
+    })
+  })
 }

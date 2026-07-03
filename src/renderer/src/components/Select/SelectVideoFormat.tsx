@@ -1,4 +1,4 @@
-import { Alert, Select, Text, AlertIcon } from '@chakra-ui/react'
+import { Select, Text } from '@chakra-ui/react'
 import { OptionSelect } from './OptionSelect'
 import { VIDEO_FORMAT } from '@shared/constants/video-format'
 import { TVideoFormatEnum } from '@shared/types/enums/video-format'
@@ -9,7 +9,7 @@ interface SelectVideoFormatProps {
   setDownloadOption: (value: React.SetStateAction<TDownloadOption>) => void
 }
 
-const DISABLED_FORMATS: TVideoFormatEnum[] = [VIDEO_FORMAT.MP4, VIDEO_FORMAT.AVI, VIDEO_FORMAT.MOV]
+const DISABLED_FORMATS: TVideoFormatEnum[] = []
 
 export const SelectVideoFormat = ({
   downloadOption,
@@ -21,10 +21,6 @@ export const SelectVideoFormat = ({
 
   return (
     <>
-      <Alert status="warning" borderRadius={5}>
-        <AlertIcon />
-        This section is temporary disabled
-      </Alert>
       <Text>Video Format:</Text>
       <Select
         size="md"

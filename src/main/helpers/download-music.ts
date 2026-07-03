@@ -1,46 +1,79 @@
 import { TDownloadOption } from '@shared/types/types/download-option'
 import { getDownloadFolderPath } from './get-download-folder-path'
 import { getBinaryPath } from './get-binary-path'
-import { exec } from 'child_process'
+import { audioBitrateMap } from './audio-bitrate.map'
+import { getJsRuntimeArgs } from './get-js-runtime'
+import { isLosslessMusicFormat } from '@shared/constants/lossless-music-format'
+import { MUSIC_FORMAT } from '@shared/constants/music-format'
+import { execFile } from 'child_process'
 import { app } from 'electron'
 import ffmpegPath from 'ffmpeg-static'
 import { dirname } from 'path'
+
+// Formats that support an embedded thumbnail / cover art.
+const THUMBNAIL_CAPABLE_FORMATS: TDownloadOption['musicFormat'][] = [
+  MUSIC_FORMAT.MP3,
+  MUSIC_FORMAT.FLAC
+]
 
 export const downloadMusic = async (
   youtubeUrl: string,
   fileName: string,
   musicFormat: TDownloadOption['musicFormat'],
-  musicQuality: TDownloadOption['musicQuality']
-  // TODO: connect musicQuality
+  musicQuality: TDownloadOption['musicQuality'],
+  isPlaylist: boolean
 ) => {
-  try {
-    if (!ffmpegPath) throw new Error('ffmpegPath is not defined')
+  if (!ffmpegPath) throw new Error('ffmpegPath is not defined')
 
-    const ffmpegLocation = dirname(ffmpegPath)
+  const ffmpegLocation = dirname(ffmpegPath)
+  const commandPath = getBinaryPath({ target: 'yt-dlp' })
+  const downloadDir = getDownloadFolderPath()
 
-    return new Promise((resolve, reject) => {
-      console.log('download Music')
-      console.log({ isPackaged: app.isPackaged, dirname: __dirname, fileName })
+  console.log('download Music')
+  console.log({ isPackaged: app.isPackaged, dirname: __dirname, fileName, musicFormat, musicQuality })
 
-      const commandPath = getBinaryPath({ target: 'yt-dlp' })
-      const downloadDir = getDownloadFolderPath()
+  const outputTemplate = isPlaylist
+    ? `${downloadDir}/%(playlist_index)s - %(title)s.%(ext)s`
+    : `${downloadDir}/${fileName}.%(ext)s`
 
-      const command = `"${commandPath}" --extract-audio --audio-format mp3 --ffmpeg-location "${ffmpegLocation}" -o "${downloadDir}/${fileName}.${musicFormat}" ${youtubeUrl}`
+  const args = [
+    ...getJsRuntimeArgs(),
+    '--extract-audio',
+    '--audio-format',
+    musicFormat,
+    '--ffmpeg-location',
+    ffmpegLocation,
+    '--embed-metadata',
+    isPlaylist ? '--yes-playlist' : '--no-playlist',
+    '-o',
+    outputTemplate
+  ]
 
-      exec(command, (error, stdout, stderr) => {
-        if (error) {
-          console.error(`Error executing yt-dlp: ${error.message}`)
-          reject(error)
-        }
-        if (stderr) {
-          console.error(`stderr: ${stderr}`)
-          reject(stderr)
-        }
-        console.log(`stdout: ${stdout}`)
-        resolve('Downloaded complete')
-      })
-    })
-  } catch (err) {
-    console.log(err)
+  // Bitrate/quality only applies to lossy formats (MP3). Skip it for lossless (WAV/AIFF/FLAC).
+  if (!isLosslessMusicFormat(musicFormat)) {
+    const bitrate = audioBitrateMap[musicFormat]?.[musicQuality]
+    if (bitrate) {
+      args.push('--audio-quality', `${bitrate}K`)
+    }
   }
+
+  // Only embed a thumbnail for containers that support cover art.
+  if (THUMBNAIL_CAPABLE_FORMATS.includes(musicFormat)) {
+    args.push('--embed-thumbnail')
+  }
+
+  args.push(youtubeUrl)
+
+  return new Promise((resolve, reject) => {
+    execFile(commandPath, args, (error, stdout, stderr) => {
+      if (stderr) console.error(`stderr: ${stderr}`)
+      if (error) {
+        console.error(`Error executing yt-dlp: ${error.message}`)
+        reject(error)
+        return
+      }
+      console.log(`stdout: ${stdout}`)
+      resolve('Downloaded complete')
+    })
+  })
 }

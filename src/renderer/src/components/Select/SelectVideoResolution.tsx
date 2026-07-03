@@ -9,7 +9,7 @@ interface SelectVideoResolutionProps {
   setDownloadOption: (value: React.SetStateAction<TDownloadOption>) => void
 }
 
-const DISABLED_RESOLUTIONS: TVideoResolutionEnum[] = Object.values(VIDEO_RESOLUTION)
+const DISABLED_RESOLUTIONS: TVideoResolutionEnum[] = []
 
 export const SelectVideoResolution = ({
   downloadOption,

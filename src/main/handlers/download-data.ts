@@ -15,31 +15,31 @@ export const downloadData = async (
   try {
     switch (formatTypeButton) {
       case FORMAT_TYPE_BUTTON.MUSIC: {
-        const { musicFormat, musicQuality } = downloadOption
-        await downloadMusic(youtubeUrl, fileName, musicFormat, musicQuality)
-        // TODO: poprawic przekazywane settingsy do pobrania
+        const { musicFormat, musicQuality, isPlaylist } = downloadOption
+        await downloadMusic(youtubeUrl, fileName, musicFormat, musicQuality, isPlaylist)
         break
       }
       case FORMAT_TYPE_BUTTON.VIDEO: {
-        const { videoFormat, videoResolution } = downloadOption
-        await downloadVideo(youtubeUrl, fileName, videoFormat, videoResolution)
+        const { videoFormat, videoResolution, isPlaylist } = downloadOption
+        await downloadVideo(youtubeUrl, fileName, videoFormat, videoResolution, isPlaylist)
         break
       }
       case FORMAT_TYPE_BUTTON.VIDEO_MUSIC: {
-        const { musicFormat, musicQuality, videoFormat, videoResolution } = downloadOption
+        const { musicQuality, videoFormat, videoResolution, isPlaylist } = downloadOption
         await downloadVideoMusic(
           youtubeUrl,
           fileName,
-          musicFormat,
           musicQuality,
           videoFormat,
-          videoResolution
+          videoResolution,
+          isPlaylist
         )
         break
       }
       default:
         throw new Error('Invalid format type button')
     }
+    return { isError: false, message: 'Download complete' }
   } catch (err) {
     return {
       isError: true,

@@ -9,11 +9,7 @@ interface SelectMusicFormatsProps {
   setDownloadOption: (value: React.SetStateAction<TDownloadOption>) => void
 }
 
-const DISABLED_FORMATS: TMusicFormatEnum[] = [
-  MUSIC_FORMAT.WAV,
-  MUSIC_FORMAT.AIFF,
-  MUSIC_FORMAT.FLAC
-]
+const DISABLED_FORMATS: TMusicFormatEnum[] = []
 
 export const SelectMusicFormats = ({
   downloadOption,

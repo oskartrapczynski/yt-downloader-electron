@@ -9,4 +9,5 @@ export type TDownloadOption = {
   [DOWNLOAD_OPTION.MUSIC_FORMAT]: TMusicFormatEnum
   [DOWNLOAD_OPTION.MUSIC_QUALITY]: TMusicQualityEnum
   [DOWNLOAD_OPTION.VIDEO_RESOLUTION]: TVideoResolutionEnum
+  [DOWNLOAD_OPTION.IS_PLAYLIST]: boolean
 }
